@@ -72,4 +72,27 @@ describe('integration', function() {
       done()
     })
   })
+
+  it('filters regardless of order', function(done) {
+    const config = {
+      output: {
+        path: outputDir,
+        filename: '[id].loader.js'
+      },
+      entry: aFixture('entry_non_focus_first.js'),
+      plugins: [
+        new FocusPlugin([/some_pattern/])
+      ]
+    }
+
+    webpack(config, (err, stats) => {
+      console.log(stats.toString())
+      expect(err).to.be.null
+      const compilation = stats.compilation
+      expect(compilation.errors).to.be.empty
+      const filenamesIncluded = compilation.chunks[0].modules.map(mod => mod.resource)
+      expect(filenamesIncluded).to.have.length(3)
+      done()
+    })
+  })
 })
