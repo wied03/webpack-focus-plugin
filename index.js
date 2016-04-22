@@ -4,7 +4,7 @@ const createFilteredFs = require('./lib/createFilteredFs')
 
 function getCustomResolveDependencies(focusPatterns, origFunc) {
   return function resolveDependencies(fs, resource, recursive, regExp, callback) {
-    const focusState = {enabled: false}
+    const focusState = {focusFiles: []}
     const filterFs = createFilteredFs(focusState, fs, focusPatterns)
     return origFunc(filterFs, resource, recursive, regExp, callback)
   }
