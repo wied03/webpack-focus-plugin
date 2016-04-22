@@ -1,5 +1,7 @@
 'use strict'
 
+/*jshint expr: true*/
+
 const expect = require('chai').expect
 const webpack = require('webpack')
 const rimraf = require('rimraf')

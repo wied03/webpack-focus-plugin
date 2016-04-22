@@ -67,7 +67,7 @@ describe('filterFiles', function() {
     })
 
     it('does not filter when no matches occur', function(done) {
-       doFilter([/other_pattern/], ['file1', 'file2', 'some_dir'], function(err, files) {
+      doFilter([/other_pattern/], ['file1', 'file2', 'some_dir'], function(err, files) {
         expect(err).to.be.null
         expect(files).to.have.length(3)
         done()
