@@ -29,8 +29,17 @@ describe('filteredFs', function() {
     }
   }
 
+  const mochaScope = this
+  beforeEach(function() {
+    mochaScope.focusState = {enabled: false}
+  })
+
+  function doFilteredFs(fs, patterns) {
+    return createFilteredFs(mochaScope.focusState, fs, patterns)
+  }
+
   it('creates a filtered filesystem', function(done) {
-    const filteredFs = createFilteredFs(mockFs, [])
+    const filteredFs = doFilteredFs(mockFs, [])
 
     filteredFs.readdir('foobar', function(err, files) {
       expect(files).to.have.length(2)
@@ -41,7 +50,7 @@ describe('filteredFs', function() {
   })
 
   it('passes on errors', function(done) {
-    const filteredFs = createFilteredFs(mockFs, [])
+    const filteredFs = doFilteredFs(mockFs, [])
 
     filteredFs.readdir('error', function(err, files) {
       expect(err.message).to.eq('a problem')
@@ -51,8 +60,8 @@ describe('filteredFs', function() {
   })
 
   it('remembers instances for the same filesystem', function() {
-    const filteredFs = createFilteredFs(mockFs, [])
-    const filteredFs2 = createFilteredFs(mockFs, [])
+    const filteredFs = doFilteredFs(mockFs, [])
+    const filteredFs2 = doFilteredFs(mockFs, [])
 
     expect(filteredFs2).to.eq(filteredFs)
   })

@@ -10,10 +10,12 @@ const filterFiles = require('../../lib/filterFiles')
 describe('filterFiles', function() {
   const mockFs = {
     readFile: function(fullPath, callback) {
-      expect(path.dirname(fullPath)).to.eq('foobar')
       const base = path.basename(fullPath)
 
       if (base === 'file1') {
+        callback(null, 'does not contain anything special')
+      }
+      else if (base === 'file4') {
         callback(null, 'does not contain anything special')
       }
       else if (base === 'some_dir') {
@@ -34,8 +36,14 @@ describe('filterFiles', function() {
     }
   }
 
-  function doFilter(ignorePatterns, files, callback) {
-    filterFiles(mockFs, ignorePatterns, 'foobar', files, callback)
+  const mochaScope = this
+  beforeEach(function() {
+    mochaScope.focusState = {enabled: false}
+  })
+
+  function doFilter(ignorePatterns, files, callback, directory) {
+    directory = directory || 'foobar'
+    filterFiles(mochaScope.focusState, mockFs, ignorePatterns, directory, files, callback)
   }
 
   context('single path, no dirs', function() {
@@ -82,6 +90,19 @@ describe('filterFiles', function() {
       expect(err).to.be.null
       expect(files).to.have.length(2)
       done()
+    })
+  })
+
+  it('filters recursive directories', function(done) {
+    doFilter([/some_pattern/], ['file1', 'file2', 'some_dir'], function(err, files) {
+      expect(err).to.be.null
+      expect(files).to.have.length(2)
+      expect(files[1]).to.eq('file2')
+      expect(files[0]).to.eq('some_dir')
+      doFilter([/some_pattern/], ['file4'], function(err,files) {
+        expect(files).to.be.empty
+        done()
+      }, 'some_dir')
     })
   })
 })
