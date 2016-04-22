@@ -9,7 +9,7 @@
   "scripts": {
     "test": "mocha",
     "eslint": "eslint index.js lib test",
-    "jshint": "jshint index.js lib/*.js test/**/*.js"
+    "jshint": "jshint index.js lib/*.js test/*.js"
   },
   "author": "wied03",
   "license": "BSD-2-Clause",
