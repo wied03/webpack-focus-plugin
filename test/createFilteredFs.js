@@ -16,6 +16,14 @@ describe('filteredFs', function() {
     },
     readFile: function(path, callback) {
       callback(null, 'nothing')
+    },
+    stat: function(filename, callback) {
+      const result = {
+        isDirectory: function() {
+          return false
+        }
+      }
+      callback(null, result)
     }
   }
 
