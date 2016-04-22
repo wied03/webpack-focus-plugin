@@ -48,7 +48,7 @@ describe('integration', function() {
     })
   })
 
-  it.only('filters', function(done) {
+  it('filters', function(done) {
     const config = {
       output: {
         path: outputDir,

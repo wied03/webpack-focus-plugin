@@ -3,7 +3,7 @@
 const expect = require('chai').expect
 const path = require('path')
 
-const filterFiles = require('../lib/filterFiles')
+const filterFiles = require('../../lib/filterFiles')
 
 describe('filterFiles', function() {
   const mockFs = {

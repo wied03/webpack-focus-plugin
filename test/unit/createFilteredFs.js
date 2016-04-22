@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect
 
-const createFilteredFs = require('../lib/createFilteredFs')
+const createFilteredFs = require('../../lib/createFilteredFs')
 
 describe('filteredFs', function() {
   const mockFs = {
