@@ -7,12 +7,16 @@
     "index.js"
   ],
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "eslint": "eslint index.js test",
+    "jshint": "jshint index.js test/**/*.js"
   },
   "author": "wied03",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "chai": "^3.5.0",
+    "eslint": "^2.8.0",
+    "jshint": "^2.9.2",
     "mocha": "^2.4.5",
     "webpack": "^1.13.0"
   }
