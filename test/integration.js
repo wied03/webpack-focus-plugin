@@ -43,7 +43,7 @@ describe('integration', function() {
       const compilation = stats.compilation
       expect(compilation.errors).to.be.empty
       const filenamesIncluded = compilation.chunks[0].modules.map(mod => mod.resource)
-      expect(filenamesIncluded).to.have.length(6)
+      expect(filenamesIncluded).to.have.length(7)
       done()
     })
   })
