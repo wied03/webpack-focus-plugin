@@ -4,7 +4,8 @@
   "description": "Filters out other modules when module(s) are focused with a regex",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "lib"
   ],
   "scripts": {
     "test": "mocha",
