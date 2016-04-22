@@ -15,12 +15,12 @@ function FocusPlugin(ignorePatterns) {
 
 FocusPlugin.prototype.apply = function(compiler) {
   const ignorePatterns = this.ignorePatterns
-  compiler.plugin("context-module-factory", function(cmf) {
-    cmf.plugin("after-resolve", function(options, callback) {
+  compiler.plugin('context-module-factory', function(cmf) {
+    cmf.plugin('after-resolve', function(options, callback) {
       options.resolveDependencies = getCustomResolveDependencies(ignorePatterns, options.resolveDependencies)
       return callback(null, options)
-    });
-  });
-};
+    })
+  })
+}
 
 module.exports = FocusPlugin
