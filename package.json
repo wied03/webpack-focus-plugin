@@ -1,0 +1,19 @@
+{
+  "name": "webpack-focus-plugin",
+  "version": "1.0.0",
+  "description": "Filters out other modules when module(s) are focused with a regex",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "wied03",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "webpack": "^1.13.0"
+  }
+}
