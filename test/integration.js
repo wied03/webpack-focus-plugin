@@ -198,7 +198,7 @@ describe('integration', function() {
       })
     })
 
-    it('turns filters off if the statement is removed from the entry point', function(done) {
+    it('can turn the filter off and back on', function(done) {
       const config = {
         output: {
           path: outputDir,
@@ -210,26 +210,38 @@ describe('integration', function() {
         ]
       }
       const compiler = webpack(config)
-      var firstRun = true
-      compiler.watch({}, (err, stats) => {
+      var runCount = 0
+      var watcher = compiler.watch({}, (err, stats) => {
+        runCount += 1
         console.log(stats.toString())
         expect(err).to.be.null
         const compilation = stats.compilation
         expect(compilation.errors).to.be.empty
         const filenamesIncluded = compilation.chunks[0].modules.map(mod => mod.resource)
 
-        if (firstRun) {
-          firstRun = false
+        if (runCount == 1) {
           expect(filenamesIncluded).to.have.length(4)
           fsExtra.copy(aFixture('entry_filter_disabled.js'), aFixture('entry.js'), {
             clobber: true
           }, function(err) {
-            if (err) { return done(err) }
-            console.log('copied, should now trigger again')
+            if (err) {
+              return done(err)
+            }
+            console.log('copied, should now trigger again with filters disabled')
+          })
+        } else if (runCount == 2) {
+          expect(filenamesIncluded).to.have.length(7)
+          fsExtra.copy(path.join(fixturesSrcDir, 'entry.js'), aFixture('entry.js'), {
+            clobber: true
+          }, function(err) {
+            if (err) {
+              return done(err)
+            }
+            console.log('copied, should now trigger again with filters enabled')
           })
         } else {
-          expect(filenamesIncluded).to.have.length(7)
-          done()
+          expect(filenamesIncluded).to.have.length(4)
+          watcher.close(done)
         }
       })
     })
