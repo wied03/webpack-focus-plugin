@@ -221,9 +221,10 @@ describe('integration', function() {
         if (firstRun) {
           firstRun = false
           expect(filenamesIncluded).to.have.length(4)
-          fsExtra.copy(aFixture('entry_no_filter.js'), aFixture('entry.js'), {
+          fsExtra.copy(aFixture('entry_filter_disabled.js'), aFixture('entry.js'), {
             clobber: true
           }, function(err) {
+            if (err) { return done(err) }
             console.log('copied, should now trigger again')
           })
         } else {
