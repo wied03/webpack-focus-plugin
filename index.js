@@ -2,25 +2,18 @@
 
 const createFilteredFs = require('./lib/createFilteredFs')
 
-function getCustomResolveDependencies(focusPatterns, origFunc) {
-  return function resolveDependencies(fs, resource, recursive, regExp, callback) {
-    const focusState = {
-      focusFiles: []
-    }
-    const filterFs = createFilteredFs(focusState, fs, focusPatterns)
-    return origFunc(filterFs, resource, recursive, regExp, callback)
-  }
-}
-
 function FocusPlugin(focusPatterns) {
   this.focusPatterns = focusPatterns
 }
 
-const junk = require('./lib/metadata')
+const onlyFocusedParserPlugin = require('./lib/onlyFocusedParserPlugin')
 
 FocusPlugin.prototype.apply = function(compiler) {
-  new junk().apply(compiler.parser);
+  // allows signaling focused with require.onlyFocused() in entry files
+  new onlyFocusedParserPlugin().apply(compiler.parser);
   const focusPatterns = this.focusPatterns
+  console.dir(compiler.config)
+
   compiler.plugin("compilation", function(compilation) {
     compilation.plugin('succeed-module', function(module) {
       const containsEntryDependencies = module.recursive
@@ -32,8 +25,7 @@ FocusPlugin.prototype.apply = function(compiler) {
       }
       else if (module.resource === '/Users/brady/code/Ruby/opal/repos_NOCRASHPLAN/webpack-focus-plugin/test/fixtures/entry_mult_context.js') {
         console.log('fooooooo!')
-        console.dir(module._source._value)
-        //console.dir(module)
+        console.dir(module.onlyFocusedSpecsRun)
       }
     });
   });
