@@ -10,7 +10,6 @@ function FocusPlugin(focusPatterns) {
 FocusPlugin.prototype.apply = function(compiler) {
   const focusPatterns = this.focusPatterns
   var onlyFocused = null
-  const dependencyModules = []
 
   function getCustomResolveDependencies(focusPatterns, origFunc) {
     return function(fs, resource, recursive, regExp, callback) {
@@ -30,6 +29,7 @@ FocusPlugin.prototype.apply = function(compiler) {
 
   // allows signaling focused only intent with require.onlyFocused() in entry files
   new onlyFocusedParserPlugin().apply(compiler.parser);
+  const dependencyModules = []
 
   compiler.plugin("compilation", function(compilation) {
     function clearCache() {
@@ -41,9 +41,10 @@ FocusPlugin.prototype.apply = function(compiler) {
     }
 
     compilation.plugin('succeed-module', function(module) {
+      // there is a separate module from the entry point that actually contains the dependencies
+      // from the entry point/context, that is what we want to filter
       const containsEntryDependencies = module.recursive
       const isEntryPoint = typeof module.onlyFocusedSpecsRun !== 'undefined'
-      const filesystem = compiler.inputFileSystem
 
       if (containsEntryDependencies) {
         dependencyModules.push(module)
