@@ -12,20 +12,25 @@ FocusPlugin.prototype.apply = function(compiler) {
   // allows signaling focused with require.onlyFocused() in entry files
   new onlyFocusedParserPlugin().apply(compiler.parser);
   const focusPatterns = this.focusPatterns
-  console.dir(compiler.config)
+  var onlyFocused = false
 
   compiler.plugin("compilation", function(compilation) {
     compilation.plugin('succeed-module', function(module) {
       const containsEntryDependencies = module.recursive
-      if (containsEntryDependencies) {
+      const isEntryPoint = !module.issuer
+
+      if (onlyFocused && containsEntryDependencies) {
+        // TODO: Check each dependency for the file pattern and remove it from module.dependencies if it does not have them
         //console.dir(module)
         module.dependencies.forEach(dep => {
           console.log(`will examine dependency ${dep.loc} in directory ${module.context}`)
         })
       }
-      else if (module.resource === '/Users/brady/code/Ruby/opal/repos_NOCRASHPLAN/webpack-focus-plugin/test/fixtures/entry_mult_context.js') {
-        console.log('fooooooo!')
-        console.dir(module.onlyFocusedSpecsRun)
+      else if (isEntryPoint) {
+        if (module.onlyFocusedSpecsRun) {
+          console.log('Enabled focus only specs!')
+          onlyFocused = true
+        }
       }
     });
   });
