@@ -22,12 +22,11 @@ FocusPlugin.prototype.apply = function(compiler) {
   // allows signaling focused only intent with require.onlyFocused() in entry files
   new onlyFocusedParserPlugin().apply(compiler.parser);
   const focusPatterns = this.focusPatterns
-  var onlyFocused = false
+  var onlyFocused = null
   const dependencyModules = []
 
   compiler.plugin("compilation", function(compilation) {
     compilation.plugin('succeed-module', function(module) {
-      const isEntryPoint = !module.issuer
       const containsEntryDependencies = module.recursive
       const filesystem = compiler.inputFileSystem
 
@@ -36,12 +35,17 @@ FocusPlugin.prototype.apply = function(compiler) {
         module.cacheable = true
         dependencyModules.push(module)
       }
-      else if (isEntryPoint) {
-        if (onlyFocused && !module.onlyFocusedSpecsRun) {
+      else {
+        if (typeof module.onlyFocusedSpecsRun !== 'undefined') {
+          if (onlyFocused === null) {
+            onlyFocused = module.onlyFocusedSpecsRun
+          }
+        }
+        else if (onlyFocused != module.onlyFocusedSpecsRun) {
           // focus was on and was turned off, need to force a reload to get our dependencies back
           dependencyModules.forEach(mod => mod.cacheable = false)
+          onlyFocused = module.onlyFocusedSpecsRun
         }
-        onlyFocused = module.onlyFocusedSpecsRun
       }
     });
   });

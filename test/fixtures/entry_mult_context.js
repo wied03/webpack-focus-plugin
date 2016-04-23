@@ -1,4 +1,4 @@
-require.onlyFocused()
+onlyFocused()
 var testsContext = require.context("./tests", true, /_test\.js$/);
 testsContext.keys().forEach(testsContext);
 var otherContext = require.context("./other_tests", true, /_test\.js$/);
