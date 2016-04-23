@@ -10,7 +10,6 @@ const onlyFocusedParserPlugin = require('./lib/onlyFocusedParserPlugin')
 
 function getCustomResolveDependencies(focusPatterns, origFunc) {
   return function(fs, resource, recursive, regExp, callback) {
-    console.log('custom resolve invoke')
     origFunc(fs, resource, recursive, regExp, function(err, deps) {
       if (err) { return callback(err) }
 
@@ -28,7 +27,6 @@ FocusPlugin.prototype.apply = function(compiler) {
 
   compiler.plugin("compilation", function(compilation) {
     compilation.plugin('succeed-module', function(module) {
-      console.log('rebuilding module '+module.resource)
       const isEntryPoint = !module.issuer
       const containsEntryDependencies = module.recursive
       const filesystem = compiler.inputFileSystem
@@ -40,7 +38,7 @@ FocusPlugin.prototype.apply = function(compiler) {
       }
       else if (isEntryPoint) {
         if (onlyFocused && !module.onlyFocusedSpecsRun) {
-          // focus was on and was turned off, need to force a reload
+          // focus was on and was turned off, need to force a reload to get our dependencies back
           dependencyModules.forEach(mod => mod.cacheable = false)
         }
         onlyFocused = module.onlyFocusedSpecsRun
@@ -51,7 +49,6 @@ FocusPlugin.prototype.apply = function(compiler) {
   compiler.plugin('context-module-factory', function(cmf) {
     cmf.plugin('after-resolve', function(options, callback) {
       if (onlyFocused) {
-        console.log('only focused! replacing resolve deps')
         // allow us to intercept dependencies and remove some
         options.resolveDependencies = getCustomResolveDependencies(focusPatterns, options.resolveDependencies)
       }
