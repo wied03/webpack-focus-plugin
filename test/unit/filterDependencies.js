@@ -25,16 +25,16 @@ describe('filterDependencies', function () {
   it('is focused', function (done) {
     const deps = [
       {
-        loc: 'is_focused',
+        request: 'is_focused',
       },
       {
-        loc: 'is_not_focused',
+        request: 'is_not_focused',
       }
     ]
 
     doFilter([/the_pattern/], deps, function(err, deps) {
       expect(err).to.be.null
-      expect(deps).to.eql([{loc: 'is_not_focused'}])
+      expect(deps).to.eql([{request: 'is_focused'}])
       done()
       })
   })
@@ -42,16 +42,16 @@ describe('filterDependencies', function () {
   it('is not focused', function (done){
     const deps = [
       {
-        loc: 'is_focused',
+        request: 'is_focused',
       },
       {
-        loc: 'is_not_focused',
+        request: 'is_not_focused',
       }
     ]
 
     doFilter([/other_pattern/], deps, function(err, deps) {
       expect(err).to.be.null
-      expect(deps).to.have.length(2)
+      expect(deps).to.be_empty
       done()
       })
   })

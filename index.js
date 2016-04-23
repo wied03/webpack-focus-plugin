@@ -8,6 +8,16 @@ function FocusPlugin(focusPatterns) {
 
 const onlyFocusedParserPlugin = require('./lib/onlyFocusedParserPlugin')
 
+function getCustomResolveDependencies(focusPatterns, origFunc) {
+  return function(fs, resource, recursive, regExp, callback) {
+    origFunc(fs, resource, recursive, regExp, function(err, deps) {
+      if (err) { return callback(err) }
+
+      filterDependencies(fs, focusPatterns, resource, deps, callback)
+    })
+  }
+}
+
 FocusPlugin.prototype.apply = function(compiler) {
   // allows signaling focused only intent with require.onlyFocused() in entry files
   new onlyFocusedParserPlugin().apply(compiler.parser);
@@ -16,26 +26,10 @@ FocusPlugin.prototype.apply = function(compiler) {
 
   compiler.plugin("compilation", function(compilation) {
     compilation.plugin('succeed-module', function(module) {
-      console.log('module bldg')
-      console.dir(module.building)
-      const containsEntryDependencies = module.recursive
       const isEntryPoint = !module.issuer
       const filesystem = compiler.inputFileSystem
 
-      if (onlyFocused && containsEntryDependencies) {
-
-        filterDependencies(filesystem, focusPatterns, module.context, module.dependencies, function(err, removeDeps) {
-          if (err) { return callback(err) }
-
-          removeDeps.forEach(dep => {
-            var index = module.dependencies.indexOf(dep)
-            module.dependencies.slice(index, 1)
-          })
-
-          return callback(null, module)
-        })
-      }
-      else if (isEntryPoint) {
+      if (isEntryPoint) {
         if (module.onlyFocusedSpecsRun) {
           console.log('Enabled focus only specs!')
           onlyFocused = true
@@ -43,6 +37,15 @@ FocusPlugin.prototype.apply = function(compiler) {
       }
     });
   });
+
+  compiler.plugin('context-module-factory', function(cmf) {
+    cmf.plugin('after-resolve', function(options, callback) {
+      if (onlyFocused) {
+        options.resolveDependencies = getCustomResolveDependencies(focusPatterns, options.resolveDependencies)
+      }
+      return callback(null, options)
+    })
+  })
 }
 
 module.exports = FocusPlugin
