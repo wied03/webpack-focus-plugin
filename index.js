@@ -32,7 +32,8 @@ FocusPlugin.prototype.apply = function(compiler) {
   const dependencyModules = []
 
   compiler.plugin("compilation", function(compilation) {
-    function clearCache() {
+    function clearDependencyModuleCache() {
+      // TODO: Way to clear out just this dependencies' cache without hard coding this?
       const cacheGroup = 'm'
       dependencyModules.forEach(mod => {
         var cacheKey = cacheGroup + mod.identifier()
@@ -44,6 +45,7 @@ FocusPlugin.prototype.apply = function(compiler) {
       // there is a separate module from the entry point that actually contains the dependencies
       // from the entry point/context, that is what we want to filter
       const containsEntryDependencies = module.recursive
+      // onlyFocusedSpecsRun is set from compiled/parse code in entry point
       const isEntryPoint = typeof module.onlyFocusedSpecsRun !== 'undefined'
 
       if (containsEntryDependencies) {
@@ -54,7 +56,7 @@ FocusPlugin.prototype.apply = function(compiler) {
       } else if (isEntryPoint && onlyFocused != module.onlyFocusedSpecsRun) {
         // setting has changed
         onlyFocused = module.onlyFocusedSpecsRun
-        clearCache()
+        clearDependencyModuleCache()
       }
     });
   });
