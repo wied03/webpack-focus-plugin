@@ -74,7 +74,7 @@ describe('integration', function() {
     })
   })
 
-  it.only('turns filters off if the statement is removed from the entry point', function(done) {
+  it('turns filters off if the statement is removed from the entry point', function(done) {
     const config = {
       output: {
         path: outputDir,
