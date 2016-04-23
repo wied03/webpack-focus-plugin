@@ -16,18 +16,19 @@ const outputDir = path.resolve(outputBaseDir, 'loader')
 const FocusPlugin = require('../index')
 
 describe('integration', function() {
-  const fixturesDir = path.resolve(__dirname, 'fixtures')
+  const fixturesSrcDir = path.resolve(__dirname, 'fixtures')
+  const fixturesDir = path.resolve(tmpDir, 'fixtures')
   function aFixture(file) { return path.join(fixturesDir, file) }
 
-  beforeEach(function(done) {
-    fsExtra.mkdirp('./tmp', done)
-  })
-
   beforeEach(function (done) {
-    rimraf(outputBaseDir, function(err) {
+    rimraf(tmpDir, function(err) {
       if (err) { return done(err) }
       mkdirp(outputDir, done)
     })
+  })
+
+  beforeEach(function(done) {
+    fsExtra.copy(fixturesSrcDir, fixturesDir, done)
   })
 
   it('without filters', function(done) {
@@ -96,7 +97,7 @@ describe('integration', function() {
       if (firstRun) {
         firstRun = false
         expect(filenamesIncluded).to.have.length(4)
-        fsExtra.copy('./test/fixtures/entry_no_filter.js', './test/fixtures/entry.js', {clobber: true}, function(err) {
+        fsExtra.copy(aFixture('entry_no_filter.js'), aFixture('entry.js'), {clobber: true}, function(err) {
           console.log('copied, should now trigger again')
         })
       }
