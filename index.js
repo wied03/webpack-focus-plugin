@@ -1,6 +1,6 @@
 'use strict'
 
-const createFilteredFs = require('./lib/createFilteredFs')
+const filterDependencies = require('./lib/filterDependencies')
 
 function FocusPlugin(focusPatterns) {
   this.focusPatterns = focusPatterns
@@ -9,7 +9,7 @@ function FocusPlugin(focusPatterns) {
 const onlyFocusedParserPlugin = require('./lib/onlyFocusedParserPlugin')
 
 FocusPlugin.prototype.apply = function(compiler) {
-  // allows signaling focused with require.onlyFocused() in entry files
+  // allows signaling focused only intent with require.onlyFocused() in entry files
   new onlyFocusedParserPlugin().apply(compiler.parser);
   const focusPatterns = this.focusPatterns
   var onlyFocused = false
@@ -18,12 +18,13 @@ FocusPlugin.prototype.apply = function(compiler) {
     compilation.plugin('succeed-module', function(module) {
       const containsEntryDependencies = module.recursive
       const isEntryPoint = !module.issuer
+      const filesystem = compiler.inputFileSystem
 
       if (onlyFocused && containsEntryDependencies) {
         // TODO: Check each dependency for the file pattern and remove it from module.dependencies if it does not have them
         //console.dir(module)
         module.dependencies.forEach(dep => {
-          console.log(`will examine dependency ${dep.loc} in directory ${module.context}`)
+          console.log(`will examine dependency ${dep.loc} in directory ${module.context} isomg fs ${filesystem}`)
         })
       }
       else if (isEntryPoint) {
@@ -34,13 +35,6 @@ FocusPlugin.prototype.apply = function(compiler) {
       }
     });
   });
-
-  // compiler.plugin('context-module-factory', function(cmf) {
-  //   cmf.plugin('after-resolve', function(options, callback) {
-  //     options.resolveDependencies = getCustomResolveDependencies(focusPatterns, options.resolveDependencies)
-  //     return callback(null, options)
-  //   })
-  // })
 }
 
 module.exports = FocusPlugin
