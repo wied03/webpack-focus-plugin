@@ -1,13 +1,11 @@
 'use strict'
 
 const filterDependencies = require('./lib/filterDependencies')
+const onlyFocusedParserPlugin = require('./lib/onlyFocusedParserPlugin')
 
 function FocusPlugin(focusPatterns) {
   this.focusPatterns = focusPatterns
 }
-
-var ConstDependency = require("webpack/lib/dependencies/ConstDependency");
-var NullFactory = require("webpack/lib/NullFactory");
 
 function getCustomResolveDependencies(focusPatterns, origFunc) {
   return function(fs, resource, recursive, regExp, callback) {
@@ -25,19 +23,9 @@ FocusPlugin.prototype.apply = function(compiler) {
   const dependencyModules = []
 
   // allows signaling focused only intent with require.onlyFocused() in entry files
-  compiler.parser.plugin("call onlyFocused", function(expr) {
-    this.state.current.onlyFocusedSpecsRun = expr.arguments[0].value
-    // only here to ensure 'onlyFocused' doesn't actually get executed
-    var dep = new ConstDependency('/* onlyFocused tests */', expr.range);
-    dep.loc = expr.loc;
-    this.state.current.addDependency(dep)
-    return true
-  })
+  new onlyFocusedParserPlugin().apply(compiler.parser);
 
   compiler.plugin("compilation", function(compilation) {
-    compilation.dependencyFactories.set(ConstDependency, new NullFactory());
-    compilation.dependencyTemplates.set(ConstDependency, new ConstDependency.Template());
-
     compilation.plugin('succeed-module', function(module) {
       const containsEntryDependencies = module.recursive
       const filesystem = compiler.inputFileSystem
