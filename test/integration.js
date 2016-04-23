@@ -201,6 +201,10 @@ describe('integration', function() {
     })
 
     it('can turn the filter off and back on', function(done) {
+      if (process.env.FILE_WATCH_ISSUES) {
+        this.skip()
+        return done()
+      }
       const config = {
         output: {
           path: outputDir,
