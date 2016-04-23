@@ -7,20 +7,27 @@ function FocusPlugin(focusPatterns) {
   this.focusPatterns = focusPatterns
 }
 
-function getCustomResolveDependencies(focusPatterns, origFunc) {
-  return function(fs, resource, recursive, regExp, callback) {
-    origFunc(fs, resource, recursive, regExp, function(err, deps) {
-      if (err) { return callback(err) }
-
-      filterDependencies(fs, focusPatterns, resource, deps, callback)
-    })
-  }
-}
-
 FocusPlugin.prototype.apply = function(compiler) {
   const focusPatterns = this.focusPatterns
   var onlyFocused = null
   const dependencyModules = []
+
+  function getCustomResolveDependencies(focusPatterns, origFunc) {
+    return function(fs, resource, recursive, regExp, callback) {
+      origFunc(fs, resource, recursive, regExp, function(err, deps) {
+        if (err) {
+          return callback(err)
+        }
+
+        if (onlyFocused) {
+          filterDependencies(fs, focusPatterns, resource, deps, callback)
+        }
+        else {
+          callback(null, deps)
+        }
+      })
+    }
+  }
 
   // allows signaling focused only intent with require.onlyFocused() in entry files
   new onlyFocusedParserPlugin().apply(compiler.parser);
@@ -30,22 +37,26 @@ FocusPlugin.prototype.apply = function(compiler) {
       const containsEntryDependencies = module.recursive
       const filesystem = compiler.inputFileSystem
 
-      // ideally we'd clean up dependencies right here, but most of these module hooks are not async
       if (containsEntryDependencies) {
-        // TODO: Now that this is considered a dependency, maybe we can remove the caching code??
-        module.cacheable = true
         dependencyModules.push(module)
-      }
-      else {
+      } else {
+        // ideally we'd clean up dependencies right here, but most of these module hooks are not async
+        // TODO: remove nested IFS
         if (typeof module.onlyFocusedSpecsRun !== 'undefined') {
           if (onlyFocused === null) {
+            console.log(`set only focused for first time to ${module.onlyFocusedSpecsRun}`)
             onlyFocused = module.onlyFocusedSpecsRun
+          } else if (onlyFocused != module.onlyFocusedSpecsRun) {
+            console.log(`only focused is ${onlyFocused}, module setting is ${module.onlyFocusedSpecsRun}`)
+              // focus was on and was turned off
+            onlyFocused = module.onlyFocusedSpecsRun
+              // TODO: Extract into a function
+            const cacheGroup = 'm'
+            dependencyModules.forEach(mod => {
+              var cacheKey = cacheGroup + mod.identifier()
+              delete compilation.cache[cacheKey]
+            })
           }
-        }
-        else if (onlyFocused != module.onlyFocusedSpecsRun) {
-          // focus was on and was turned off, need to force a reload to get our dependencies back
-          dependencyModules.forEach(mod => mod.cacheable = false)
-          onlyFocused = module.onlyFocusedSpecsRun
         }
       }
     });
@@ -53,10 +64,11 @@ FocusPlugin.prototype.apply = function(compiler) {
 
   compiler.plugin('context-module-factory', function(cmf) {
     cmf.plugin('after-resolve', function(options, callback) {
-      if (onlyFocused) {
+      console.log('after resolve running')
+        //if (onlyFocused) {
         // allow us to intercept dependencies and remove some
-        options.resolveDependencies = getCustomResolveDependencies(focusPatterns, options.resolveDependencies)
-      }
+      options.resolveDependencies = getCustomResolveDependencies(focusPatterns, options.resolveDependencies)
+        //}
       return callback(null, options)
     })
   })
