@@ -36,7 +36,7 @@ describe('integration', function() {
         path: outputDir,
         filename: '[id].loader.js'
       },
-      entry: aFixture('entry.js')
+      entry: aFixture('entry_no_filter.js')
     }
 
     webpack(config, (err, stats) => {
@@ -70,6 +70,40 @@ describe('integration', function() {
       const filenamesIncluded = compilation.chunks[0].modules.map(mod => mod.resource)
       expect(filenamesIncluded).to.have.length(4)
       done()
+    })
+  })
+
+  it.only('turns filters off if the statement is removed from the entry point', function(done) {
+    const config = {
+      output: {
+        path: outputDir,
+        filename: '[id].loader.js'
+      },
+      entry: aFixture('entry.js'),
+      plugins: [
+        new FocusPlugin([/some_pattern/])
+      ]
+    }
+    const compiler = webpack(config)
+    var firstRun = true
+    compiler.watch({}, (err, stats) => {
+      console.log(stats.toString())
+      expect(err).to.be.null
+      const compilation = stats.compilation
+      expect(compilation.errors).to.be.empty
+      const filenamesIncluded = compilation.chunks[0].modules.map(mod => mod.resource)
+
+      if (firstRun) {
+        firstRun = false
+        expect(filenamesIncluded).to.have.length(4)
+        fsExtra.copy('./test/fixtures/entry_no_filter.js', './test/fixtures/entry.js', {clobber: true}, function(err) {
+          console.log('copied, should now trigger again')
+        })
+      }
+      else {
+        expect(filenamesIncluded).to.have.length(7)
+        done()
+      }
     })
   })
 
