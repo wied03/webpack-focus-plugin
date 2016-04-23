@@ -1,6 +1,6 @@
 {
   "name": "webpack-focus-plugin",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Filters out other modules when module(s) are focused with a regex",
   "main": "index.js",
   "files": [
