@@ -76,7 +76,7 @@ describe('integration', function() {
       webpack(config, (err, stats) => {
         readFile(path.join(config.output.path, '0.loader.js'), function(err, data) {
           expect(err).to.be.null
-          expect(data.toString()).to.include('/* onlyFocused tests disabled */')
+          expect(data.toString()).to.not.match(/\s*onlyFocused\(false\)/)
           done()
         })
       })
@@ -130,7 +130,7 @@ describe('integration', function() {
       webpack(config, (err, stats) => {
         readFile(path.join(config.output.path, '0.loader.js'), function(err, data) {
           expect(err).to.be.null
-          expect(data.toString()).to.include('/* onlyFocused tests */')
+          expect(data.toString()).to.not.match(/\s*onlyFocused\(true\)/)
           done()
         })
       })
