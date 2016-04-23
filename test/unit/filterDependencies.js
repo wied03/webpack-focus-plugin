@@ -19,24 +19,22 @@ describe('filterDependencies', function () {
   }
 
   function doFilter(patterns, dependencies, callback) {
-    filterDependencies(mockFs, patterns, dependencies, callback)
+    filterDependencies(mockFs, patterns, 'some_dir' ,dependencies, callback)
   }
 
   it('is focused', function (done) {
     const deps = [
       {
         loc: 'is_focused',
-        context: 'some_dir'
       },
       {
         loc: 'is_not_focused',
-        context: 'some_dir'
       }
     ]
 
     doFilter([/the_pattern/], deps, function(err, deps) {
       expect(err).to.be.null
-      expect(deps).to.eql([{loc: 'is_not_focused', context: 'some_dir'}])
+      expect(deps).to.eql([{loc: 'is_not_focused'}])
       done()
       })
   })
@@ -45,11 +43,9 @@ describe('filterDependencies', function () {
     const deps = [
       {
         loc: 'is_focused',
-        context: 'some_dir'
       },
       {
         loc: 'is_not_focused',
-        context: 'some_dir'
       }
     ]
 

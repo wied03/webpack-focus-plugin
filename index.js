@@ -16,15 +16,23 @@ FocusPlugin.prototype.apply = function(compiler) {
 
   compiler.plugin("compilation", function(compilation) {
     compilation.plugin('succeed-module', function(module) {
+      console.log('module bldg')
+      console.dir(module.building)
       const containsEntryDependencies = module.recursive
       const isEntryPoint = !module.issuer
       const filesystem = compiler.inputFileSystem
 
       if (onlyFocused && containsEntryDependencies) {
-        // TODO: Check each dependency for the file pattern and remove it from module.dependencies if it does not have them
-        //console.dir(module)
-        module.dependencies.forEach(dep => {
-          console.log(`will examine dependency ${dep.loc} in directory ${module.context} isomg fs ${filesystem}`)
+
+        filterDependencies(filesystem, focusPatterns, module.context, module.dependencies, function(err, removeDeps) {
+          if (err) { return callback(err) }
+
+          removeDeps.forEach(dep => {
+            var index = module.dependencies.indexOf(dep)
+            module.dependencies.slice(index, 1)
+          })
+
+          return callback(null, module)
         })
       }
       else if (isEntryPoint) {
