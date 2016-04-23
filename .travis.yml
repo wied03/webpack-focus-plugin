@@ -1,0 +1,14 @@
+language: node_js
+sudo: false
+
+cache:
+  directories:
+    - node_modules
+
+env:
+  - FILE_WATCH_ISSUES=true
+
+script:
+  - "npm run eslint"
+  - "npm run jshint"
+  - "npm run test"
