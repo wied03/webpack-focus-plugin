@@ -29,6 +29,7 @@ FocusPlugin.prototype.apply = function(compiler) {
       const isEntryPoint = !module.issuer
       const filesystem = compiler.inputFileSystem
 
+      // ideally we'd clean up dependencies right here, but most of these module hooks are not async
       if (isEntryPoint) {
         if (module.onlyFocusedSpecsRun) {
           console.log('Enabled focus only specs!')
