@@ -5,7 +5,7 @@ module.exports = {
     path: './tmp/output/loader',
     filename: '[id].loader.js'
   },
-  entry: './test/fixtures/entry_mult_context.js',
+  entry: './test/fixtures/entry.js',
   plugins: [
     new FocusPlugin([/some_pattern/])
   ]
