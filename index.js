@@ -28,10 +28,10 @@ FocusPlugin.prototype.apply = function(compiler) {
   }
 
   // allows signaling focused only intent with require.onlyFocused() in entry files
-  new onlyFocusedParserPlugin().apply(compiler.parser);
+  new onlyFocusedParserPlugin().apply(compiler.parser)
   const dependencyModules = []
 
-  compiler.plugin("compilation", function(compilation) {
+  compiler.plugin('compilation', function(compilation) {
     function clearDependencyModuleCache() {
       // TODO: Way to clear out just this dependencies' cache without hard coding this?
       const cacheGroup = 'm'
@@ -58,8 +58,8 @@ FocusPlugin.prototype.apply = function(compiler) {
         onlyFocused = module.onlyFocusedSpecsRun
         clearDependencyModuleCache()
       }
-    });
-  });
+    })
+  })
 
   compiler.plugin('context-module-factory', function(cmf) {
     cmf.plugin('after-resolve', function(options, callback) {

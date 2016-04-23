@@ -10,7 +10,7 @@ describe('filterDependencies', function () {
   const mockFs = {
     readFile: function(filename, callback) {
       if (filename === 'some_dir/is_focused') {
-        callback(null, "the_pattern")
+        callback(null, 'the_pattern')
       }
       else {
         callback(null, 'something else')
@@ -25,10 +25,10 @@ describe('filterDependencies', function () {
   it('is focused', function (done) {
     const deps = [
       {
-        request: 'is_focused',
+        request: 'is_focused'
       },
       {
-        request: 'is_not_focused',
+        request: 'is_not_focused'
       }
     ]
 
@@ -36,16 +36,16 @@ describe('filterDependencies', function () {
       expect(err).to.be.null
       expect(deps).to.eql([{request: 'is_focused'}])
       done()
-      })
+    })
   })
 
   it('is not focused', function (done){
     const deps = [
       {
-        request: 'is_focused',
+        request: 'is_focused'
       },
       {
-        request: 'is_not_focused',
+        request: 'is_not_focused'
       }
     ]
 
@@ -53,6 +53,6 @@ describe('filterDependencies', function () {
       expect(err).to.be.null
       expect(deps).to.be_empty
       done()
-      })
+    })
   })
 })

@@ -8,7 +8,7 @@
     "lib"
   ],
   "scripts": {
-    "test": "mocha",
+    "test": "mocha test/integration.js test/unit/**/*.js",
     "eslint": "eslint index.js lib test",
     "jshint": "jshint index.js lib test"
   },
