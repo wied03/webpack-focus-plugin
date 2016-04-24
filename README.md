@@ -4,7 +4,7 @@
 [![Quality](http://img.shields.io/codeclimate/github/wied03/webpack-focus-plugin.svg?style=flat-square)](https://codeclimate.com/github/wied03/webpack-focus-plugin)
 [![Version](https://img.shields.io/npm/v/webpack-focus-plugin.svg?style=flat-square)](https://www.npmjs.com/package/webpack-focus-plugin)
 
-Webpack plugin that allows you to specify regex patterns. Only files required from your entry point that match the regex (and their dependencies) will be included in the bundle.
+Webpack plugin that allows you to specify regex patterns and focus on certain files. Only files (required from your entry point) whose contents match the regex will be included in the bundle. The dependencies of those files will also be included.
 
 It can be useful to speed up your test feedback cycle by only feeding specs with focused values to the browser.
 
@@ -33,7 +33,7 @@ var testsContext = require.context("./tests", true, /_test\.js$/);
 testsContext.keys().forEach(testsContext);
 ```
 
-You can also change the argument to 'false' or omit the statement entirely, either one will disable the filter. Webpack watch should pick up the change.
+You can also change the argument to 'false' or omit the statement entirely, either one will disable the filter. Webpack watch should pick up the change (see issues about watch and removing focus).
 
 ## Limitations:
 * TBD
