@@ -1,6 +1,6 @@
 {
   "name": "webpack-focus-plugin",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Filters out other modules when module(s) are focused with a regex",
   "main": "index.js",
   "files": [
@@ -19,6 +19,13 @@
   },
   "author": "wied03",
   "homepage": "https://github.com/wied03/webpack-focus-plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wied03/webpack-focus-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wied03/webpack-focus-plugin/issues"
+  },
   "license": "BSD-2-Clause",
   "devDependencies": {
     "chai": "^3.5.0",
