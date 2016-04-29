@@ -1,11 +1,16 @@
 {
   "name": "webpack-focus-plugin",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Filters out other modules when module(s) are focused with a regex",
   "main": "index.js",
   "files": [
     "index.js",
     "lib"
+  ],
+  "keywords": [
+    "webpack",
+    "testing",
+    "webpack-plugin"
   ],
   "scripts": {
     "test": "mocha test/integration.js test/unit/**/*.js",
@@ -13,6 +18,7 @@
     "jshint": "jshint index.js lib test"
   },
   "author": "wied03",
+  "homepage": "https://github.com/wied03/webpack-focus-plugin",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "chai": "^3.5.0",
